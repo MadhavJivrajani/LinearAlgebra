@@ -104,7 +104,7 @@ class LinearSystem:
             for j in range(i+1, rows):
                 temp = augmented_matrix[j][i]/augmented_matrix[i][i]
                 for k in range(i, cols):
-                    augmented_matrix[j][k] = augmented_matrix[j][k] - augmented_matrix[i][k] * temp
+                    augmented_matrix[j][k] = float("%.2f" % (augmented_matrix[j][k] - augmented_matrix[i][k] * temp))
         
         return augmented_matrix
     
@@ -112,14 +112,14 @@ class LinearSystem:
         augmented_matrix = self.gaussian_elimination(A, b)
         
         for row in augmented_matrix:
-            row = [str("%.2f"%i) for i in row]
+            row = [str(float("%.2f"%i)) for i in row]
             print("\t".join(row))
     
     def get_nature_of_solutions(self, A, b):
         augmented_matrix = self.gaussian_elimination(A, b)
         if(augmented_matrix[-1][-2]==0 and augmented_matrix[-1][-1]==0):
             print("Consistent, singular and infinite solutions")
-        elif(augmented_matrix[-1][-2]==0 and augmented_matrix[-1][-1]!=0):
+        elif(augmented_matrix[-1][-2]!=0 and augmented_matrix[-1][-1]==0):
             print("Inconsistent, singular and no solution")
         else:
             print("Consistent, non-singular, unique solution")
@@ -155,4 +155,3 @@ class LinearSystem:
         return rank
     
     #TODO: Solve system by backward substitution
-            
