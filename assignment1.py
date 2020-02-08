@@ -16,6 +16,7 @@ Given a matrix A for the system of equations Ax=b
 
 class LinearSystem:
     def __init__(self):
+        self.solutions = []
         pass
         
     def get_det(self, A):
@@ -88,10 +89,8 @@ class LinearSystem:
         
         return augment
     
-    def gaussian_elimination(self, A, b):
-        augmented_matrix = self.augment(A, b)
+    def gaussian_elimination(self, augmented_matrix):
         rows, cols = self.get_dim(augmented_matrix)
-        
         for i in range(rows):
             pivotrow = i
             for j in range(i+1, rows):
@@ -108,21 +107,30 @@ class LinearSystem:
         
         return augmented_matrix
     
-    def print_gaussian(self, A, b):
-        augmented_matrix = self.gaussian_elimination(A, b)
-        
+    def print_gaussian(self, augmented_matrix):     
+        augmented_matrix = self.gaussian_elimination(augmented_matrix)
         for row in augmented_matrix:
             row = [str(float("%.2f"%i)) for i in row]
             print("\t".join(row))
     
-    def get_nature_of_solutions(self, A, b):
-        augmented_matrix = self.gaussian_elimination(A, b)
+    def get_nature_of_solutions(self, augmented_matrix):
         if(augmented_matrix[-1][-2]==0 and augmented_matrix[-1][-1]==0):
             print("Consistent, singular and infinite solutions")
         elif(augmented_matrix[-1][-2]!=0 and augmented_matrix[-1][-1]==0):
             print("Inconsistent, singular and no solution")
         else:
             print("Consistent, non-singular, unique solution")
+            
+    def solution_type_code(self, augmented_matrix):
+        code = -1
+        if(augmented_matrix[-1][-2]==0 and augmented_matrix[-1][-1]==0):
+            code = 0
+        elif(augmented_matrix[-1][-2]!=0 and augmented_matrix[-1][-1]==0):
+            code = 1
+        else:
+            code = 2
+        
+        return code
     
     def get_upper_triangular(self, A):
         rows, cols = self.get_dim(A)
@@ -154,4 +162,31 @@ class LinearSystem:
                 rank -= 1
         return rank
     
-    #TODO: Solve system by backward substitution
+    def solve_equation(self, lhs, rhs):
+        lhs = lhs[::-1]
+        if(len(lhs)==1):
+            return rhs/lhs[0]
+        else:
+            target_flag = False
+            aggregate = 0
+            k = 0
+            for i in lhs[1:]:
+                aggregate += self.solutions[::-1][k]*i
+                k+=1
+            return (rhs-aggregate)/lhs[0]
+                
+            
+    def back_substitution(self, U):
+        sol_nature = self.solution_type_code(U)
+        if sol_nature==2:
+            i = 0
+            for row in U[::-1]:
+                rhs = row[-1]
+                self.solutions.append(self.solve_equation(row[::-1][1:2+i], rhs))
+                i+=1
+            print(self.solutions)
+            
+        elif sol_nature == 0:
+            print("The system has infinte solutions")
+        else:
+            print("The system is inconsistent and has no solutions")
