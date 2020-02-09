@@ -1,23 +1,40 @@
 """
-Assignment 1 for the course UE18MA251, Linear Algebra
+Assignments for the course UE18MA251, Linear Algebra
+Assignment 1
 
 Given a matrix A for the system of equations Ax=b
-    ->Display, number of equations/rows, number of unknowns/columns, and rank of the matrix. (Use built in functions if required)
-    ->Is the matrix singular (if it is a square matrix)?
+    -   Display, number of equations/rows, number of unknowns/columns, and rank of the matrix. (Use built in functions if required)
+    -   Is the matrix singular (if it is a square matrix)?
 
-    ->For a given b, will the system Ax=b have
+    -   For a given b, will the system Ax=b have
 
-        ->Unique solution.
-        ->Infinitely many solutions
-        ->No Solution.
+        -   Unique solution.
+        -   Infinitely many solutions
+        -   No Solution.
 
-    ->If it has a unique solution display the solution.
+    -   If it has a unique solution display the solution.
+
+Assignment 2
+-   For a given matrix A which has a unique solution for Ax=b for any b, 
+    test whether the LU factorization method is faster than the Gaussian Elimination method.
+
+Run a test in this manner:
+    -   First read a matrix A with full rank/full column rank.
+    -   Generate a hundred random b vectors.
+    -   Find a solution for each b.
+    -   Note down how long this approach takes.
+
+-   Factorize A to LU.
+-   Generate a hundred random b vectors.
+-   Find a solution for each b.
+-   Record how long does this new approach take.
+
+Check if the claim that the first approach takes 100*O(n3/3 ) and the second approach takes O(n3/3 ) + 99*O(n2) is true.
 """
 
 class LinearSystem:
     def __init__(self):
         self.solutions = []
-        pass
         
     def get_det(self, A):
         if not self.is_square(A):
@@ -184,9 +201,59 @@ class LinearSystem:
                 rhs = row[-1]
                 self.solutions.append(self.solve_equation(row[::-1][1:2+i], rhs))
                 i+=1
-            print(self.solutions)
+            temp = self.solutions
+            self.solutions = []
+            return temp
             
         elif sol_nature == 0:
             print("The system has infinte solutions")
         else:
             print("The system is inconsistent and has no solutions")
+
+    def LU_decompose(self, A):
+        if(self.is_square(A)):
+            rows, col = self.get_dim(A)
+            temp = self.copy_matrix(A)
+            L = self.get_zero_matrix(rows, col)
+            U = self.get_zero_matrix(rows, col)
+
+            for i in range(len(L)):
+                L[i][i] = 1
+
+            for k in range(rows):
+                U[k][k] = temp[k][k]
+
+                for i in range(k+1, rows):
+                    L[i][k] = temp[i][k]/temp[k][k]
+                    U[k][i] = temp[k][i]
+
+                for i in range(k+1, rows):
+                    for j in range(k+1, rows):
+                        temp[i][j] = temp[i][j] - L[i][k]*U[k][j]
+
+            return L, U
+        
+        else:
+            return None, None        
+    
+    def forward_substitue(self, U):
+        y = []
+        for i in range(len(U)):
+            rhs = U[i][-1]
+            if i==0:
+                y.append([rhs/U[i][0]])
+            else:
+                k = 0
+                aggregate = 0
+                for j in U[i][:i]:
+                    aggregate += U[i][k]*y[k][0]
+                    k += 1
+                y.append([(rhs - aggregate)/U[i][i]])
+                
+        return y
+
+    #TODO: Write forward subsitute and use backward substitute to solve using LU decomposition [done]
+    #Ly = b, get y solve with forward substitute [done]
+    #Ux = y, get x solve with back substitute [done]
+    #generate b vectors and measure time for gaussian elimination vs LU decomposition
+    #plot graph for the above comparison
