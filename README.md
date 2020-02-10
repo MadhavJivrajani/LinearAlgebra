@@ -28,4 +28,4 @@ Run a test in this manner:
 -   Find a solution for each b.
 -   Record how long does this new approach take.
 
-Check if the claim that the first approach takes `100*O(n<sup>3</sup>/3 )` and the second approach takes `O(n<sup>3</sup>/3 ) + 99*O(n<sup>2</sup>)` is true.
+Check if the claim that the first approach takes `100*O(n3/3 )` and the second approach takes `O(n3/3 ) + 99*O(n2)` is true.
