@@ -31,7 +31,6 @@ Run a test in this manner:
 
 Check if the claim that the first approach takes 100*O(n3/3 ) and the second approach takes O(n3/3 ) + 99*O(n2) is true.
 """
-
 class LinearSystem:
     def __init__(self):
         self.solutions = []
@@ -204,11 +203,6 @@ class LinearSystem:
             temp = self.solutions
             self.solutions = []
             return temp
-            
-        elif sol_nature == 0:
-            print("The system has infinte solutions")
-        else:
-            print("The system is inconsistent and has no solutions")
 
     def LU_decompose(self, A):
         if(self.is_square(A)):
@@ -252,6 +246,47 @@ class LinearSystem:
                 
         return y
 
+    def LU_solve(self, A, b):
+        L, U = self.LU_decompose(A)
+        
+        augment_L = self.augment(L, b)
+        y = self.forward_substitue(augment_L)
+        augment_U = self.augment(U, y)
+        
+        return self.back_substitution(augment_U)
+    
+    def compare_algorithms(self, A, n):
+        rows, col = self.get_dim(A)
+        time_data_gauss = {}
+        time_data_lu = {}
+        
+        for i in range(1,n):
+            time_g = 0
+            time_lu = 0
+            
+            for j in range(i):
+                b = [[random.randint(3, 100)] for _ in range(rows)]
+                augment = self.augment(A, b)
+                start_g = time.time()
+                aug_gauss = self.gaussian_elimination(augment)
+                x = self.back_substitution(aug_gauss)
+                end_g = time.time()
+                
+                start_lu = time.time()
+                x = self.LU_solve(A, b)
+                end_lu = time.time()
+                
+                time_g += (end_g - start_g)
+                time_lu += (end_lu - start_lu)
+                
+            time_data_gauss[i] = time_g
+            time_data_lu[i] = time_lu
+        
+        plt.plot(list(time_data_gauss.keys()), list(time_data_gauss.values()))
+        plt.plot(list(time_data_lu.keys()), list(time_data_lu.values()), color="red")
+
+        plt.show()
+        
     #TODO: Write forward subsitute and use backward substitute to solve using LU decomposition [done]
     #Ly = b, get y solve with forward substitute [done]
     #Ux = y, get x solve with back substitute [done]
