@@ -29,7 +29,7 @@ Run a test in this manner:
 -   Find a solution for each b.
 -   Record how long does this new approach take.
 
-Check if the claim that the first approach takes 100*O(n3/3 ) and the second approach takes O(n3/3 ) + 99*O(n2) is true.
+Check if the claim that the first approach takes 100*O(n3/3 ) and the second approach takes O(n3/3) + 99*O(n2) is true.
 """
 class LinearSystem:
     def __init__(self):
@@ -282,13 +282,10 @@ class LinearSystem:
             time_data_gauss[i] = time_g
             time_data_lu[i] = time_lu
         
-        plt.plot(list(time_data_gauss.keys()), list(time_data_gauss.values()))
-        plt.plot(list(time_data_lu.keys()), list(time_data_lu.values()), color="red")
-
+        plt.plot(list(time_data_gauss.keys()), list(time_data_gauss.values()), label="Gaussian Elimination")
+        plt.plot(list(time_data_lu.keys()), list(time_data_lu.values()), color="red", label="LU decomposition")
+        plt.xlabel("No. of randomly generated b vectors")
+        plt.ylabel("Time in seconds")
+        plt.legend()
+        plt.title("Gaussian Elimination vs LU Decomposition performance comparison")
         plt.show()
-        
-    #TODO: Write forward subsitute and use backward substitute to solve using LU decomposition [done]
-    #Ly = b, get y solve with forward substitute [done]
-    #Ux = y, get x solve with back substitute [done]
-    #generate b vectors and measure time for gaussian elimination vs LU decomposition
-    #plot graph for the above comparison
